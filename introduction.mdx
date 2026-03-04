@@ -5,7 +5,11 @@ description: Transform documents into clean Markdown with MkDowner's powerful co
 
 ## What is MkDowner?
 
-MkDowner is a modern React web application that converts various document formats into clean, readable Markdown. Built with a React frontend and powered by Microsoft MarkItDown on the backend, it provides a seamless drag-and-drop experience for document conversion.
+MkDowner is a modern React web application that provides bidirectional document conversion:
+- **Any format → Markdown**: Convert PDF, DOCX, PPTX, images, and more to Markdown
+- **Markdown → Word**: Convert Markdown files back to Word documents
+
+Built with a React frontend and powered by Microsoft MarkItDown on the backend, it provides a seamless drag-and-drop experience for both conversion modes.
 
 <CardGroup cols={2}>
   <Card title="Fast Conversion" icon="bolt">
@@ -17,8 +21,8 @@ MkDowner is a modern React web application that converts various document format
   <Card title="Batch Processing" icon="layer-group">
     Convert multiple files at once with automatic ZIP packaging
   </Card>
-  <Card title="Free & Secure" icon="shield-check">
-    No signup required, files processed securely
+  <Card title="Bidirectional" icon="arrows-rotate">
+    Convert to Markdown OR from Markdown to Word
   </Card>
 </CardGroup>
 
@@ -94,6 +98,30 @@ MkDowner supports a wide range of document formats:
   Powered by Microsoft MarkItDown with AI-enhanced conversion for better formatting preservation.
 </Note>
 
+## Dual Conversion Modes
+
+MkDowner provides two separate interfaces for different conversion needs:
+
+### Main Converter (/)
+
+The primary interface converts any supported format to Markdown:
+- Multiple file upload support
+- Batch processing with ZIP output
+- 24MB file size limit
+- Powered by `/upload` endpoint
+
+### Markdown to Word (/pandoc)
+
+A specialized interface for reverse conversion:
+- Converts Markdown files to Word documents
+- Single file processing
+- 16MB file size limit
+- Powered by `/md-to-word` endpoint
+
+<Card title="Learn More" icon="book" href="/features/markdown-to-word">
+  Read the complete guide to Markdown-to-Word conversion
+</Card>
+
 ## Architecture Overview
 
 MkDowner follows a modern, modular architecture:
@@ -106,27 +134,41 @@ src/
 │   ├── UploadArea/     # Drag & drop upload interface
 │   ├── FileList/       # Selected files display
 │   ├── Header/         # App header and branding
-│   └── SupportedFormats/ # Format information
+│   ├── SupportedFormats/ # Format information
+│   ├── Container/      # Layout container (internal)
+│   └── Switch/         # Toggle switch UI (internal)
 ├── hooks/              # Custom React hooks
-│   └── useFileUpload.ts # File handling logic
+│   ├── useFileUpload.ts # File handling logic
+│   └── useConversionMode.ts # Conversion mode toggle (unused)
 ├── services/           # API communication
 │   └── api.ts         # Backend integration
-└── App.tsx            # Main application component
+├── App.tsx            # Main converter (any format → Markdown)
+├── PandocConverter.tsx # Markdown → Word converter
+└── main.tsx           # Entry point with routing
 ```
 
 ### Backend (Python + Microsoft MarkItDown)
 
-The backend API handles file conversion through a simple REST endpoint:
+The backend API provides two conversion endpoints:
 
+**`POST /upload`** - Any format to Markdown:
 ```typescript
 const response = await fetch(`${API_BASE_URL}/upload`, {
   method: 'POST',
-  body: formData,
+  body: formData, // 'files' key with multiple files
+});
+```
+
+**`POST /md-to-word`** - Markdown to Word:
+```typescript
+const response = await fetch(`${API_BASE_URL}/md-to-word`, {
+  method: 'POST',
+  body: formData, // 'file' key with single .md file
 });
 ```
 
 <Info>
-  The frontend communicates with the backend via the `/upload` endpoint, which processes files and returns converted Markdown or ZIP archives.
+  Both endpoints accept FormData with file uploads and return converted files as Blobs for automatic download.
 </Info>
 
 ## Use Cases

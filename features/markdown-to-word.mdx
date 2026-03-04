@@ -1,0 +1,252 @@
+---
+title: Markdown to Word Conversion
+description: Convert Markdown files to professional Word documents
+---
+
+## Overview
+
+In addition to converting various document formats to Markdown, MkDowner also supports the reverse operation: converting Markdown files to Word documents. This feature is available through a separate route at `/pandoc` and is powered by the `PandocConverter` component.
+
+<Info>
+  Access the Markdown-to-Word converter by navigating to `/pandoc` in your browser when running the application.
+</Info>
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Markdown Input" icon="markdown">
+    Upload .md files for conversion
+  </Card>
+  <Card title="DOCX Output" icon="file-word">
+    Download professional Word documents
+  </Card>
+  <Card title="Progress Tracking" icon="chart-line">
+    Real-time conversion progress visualization
+  </Card>
+  <Card title="File Size Support" icon="file">
+    Supports Markdown files up to 16MB
+  </Card>
+</CardGroup>
+
+## How It Works
+
+### User Flow
+
+<Steps>
+  <Step title="Navigate to the converter">
+    Access the Markdown-to-Word converter at `/pandoc` route.
+  </Step>
+
+  <Step title="Upload a Markdown file">
+    Drag and drop your `.md` file or click to browse. Only `.md` files are accepted.
+    
+    ```typescript
+    // File validation in PandocConverter
+    if (files[0] && files[0].name.endsWith('.md')) {
+      setSelectedFile(files[0]);
+    } else {
+      alert('Please select a .md file');
+    }
+    ```
+  </Step>
+
+  <Step title="Convert">
+    Click the "Convert to Word" button to start the conversion process.
+  </Step>
+
+  <Step title="Download">
+    The converted DOCX file is automatically downloaded with the original filename (replacing `.md` with `.docx`).
+  </Step>
+</Steps>
+
+## Component Implementation
+
+The `PandocConverter` component (`~/workspace/source/src/PandocConverter.tsx`) handles the entire Markdown-to-Word conversion flow:
+
+### State Management
+
+```typescript
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const [isUploading, setIsUploading] = useState(false);
+const [progress, setProgress] = useState(0);
+const [showSuccess, setShowSuccess] = useState(false);
+const [downloadedFileName, setDownloadedFileName] = useState('');
+```
+
+### File Upload
+
+The component accepts only `.md` files:
+
+```typescript
+const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files;
+  if (files && files[0] && files[0].name.endsWith('.md')) {
+    setSelectedFile(files[0]);
+    setShowSuccess(false);
+  } else {
+    alert('Please select a .md file');
+  }
+};
+```
+
+### API Request
+
+Sends the Markdown file to the `/md-to-word` endpoint:
+
+```typescript
+const formData = new FormData();
+formData.append('file', selectedFile);
+
+const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/md-to-word`, {
+  method: 'POST',
+  body: formData,
+});
+```
+
+<Note>
+  Note the difference: this endpoint uses `'file'` (singular) instead of `'files'` (plural) used in the main upload endpoint.
+</Note>
+
+### File Download
+
+Downloads the converted DOCX file:
+
+```typescript
+const blob = await response.blob();
+const fileName = `${selectedFile.name.split('.')[0]}.docx`;
+
+const url = window.URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = fileName;
+document.body.appendChild(a);
+a.click();
+window.URL.revokeObjectURL(url);
+document.body.removeChild(a);
+```
+
+## Routing
+
+The application uses React Router to provide two separate interfaces:
+
+```typescript
+// src/main.tsx
+<BrowserRouter>
+  <Routes>
+    <Route path="/" element={<App />} />
+    <Route path="/pandoc" element={<PandocConverter />} />
+  </Routes>
+</BrowserRouter>
+```
+
+| Route | Component | Purpose |
+|-------|-----------|---------|
+| `/` | `App` | Main converter (any format → Markdown) |
+| `/pandoc` | `PandocConverter` | Markdown → Word conversion |
+
+## API Endpoint
+
+### POST /md-to-word
+
+Converts a Markdown file to Word format.
+
+**Request:**
+
+```http
+POST /md-to-word HTTP/1.1
+Host: localhost:5001
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="file"; filename="readme.md"
+Content-Type: text/markdown
+
+[markdown content]
+------WebKitFormBoundary--
+```
+
+**Response (Success):**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+Content-Disposition: attachment; filename="readme.docx"
+
+[docx binary data]
+```
+
+**Response (Error):**
+
+```http
+HTTP/1.1 400 Bad Request
+Content-Type: application/json
+
+{
+  "error": "Invalid markdown file"
+}
+```
+
+## Differences from Main Converter
+
+| Feature | Main App (/) | Pandoc (/pandoc) |
+|---------|--------------|------------------|
+| **Input formats** | PDF, DOCX, PPTX, images, etc. | Markdown (.md) only |
+| **Output format** | Markdown (.md) | Word (.docx) |
+| **Multiple files** | ✅ Yes (creates .zip) | ❌ No (single file only) |
+| **File size limit** | 24MB | 16MB |
+| **API endpoint** | `/upload` | `/md-to-word` |
+| **FormData key** | `'files'` (plural) | `'file'` (singular) |
+
+## Use Cases
+
+### Documentation Publishing
+
+Convert Markdown documentation to Word format for:
+- Corporate document standards
+- Print publishing workflows
+- Stakeholder reviews requiring Word format
+
+### Content Migration
+
+Convert Markdown content to Word when:
+- Moving from static site generators to traditional CMS
+- Sharing with non-technical collaborators
+- Creating editable templates from Markdown sources
+
+### Collaborative Editing
+
+Export Markdown to Word for:
+- Track changes functionality
+- Comments and annotations
+- Integration with Microsoft 365 workflows
+
+## Limitations
+
+<Warning>
+  The Markdown-to-Word converter currently supports only single-file conversions. Batch processing is not available.
+</Warning>
+
+- **Single file only**: Unlike the main converter, this does not support multiple files
+- **File size limit**: 16MB maximum (smaller than the 24MB limit for the main converter)
+- **Markdown only**: Only accepts files with `.md` extension
+- **No preview**: Files are converted and downloaded without preview
+
+## Testing the Endpoint
+
+You can test the Markdown-to-Word endpoint with curl:
+
+```bash
+curl -X POST http://localhost:5001/md-to-word \
+  -F "file=@sample.md" \
+  -o output.docx
+```
+
+## Future Enhancements
+
+Potential improvements for the Markdown-to-Word feature:
+
+- Multiple file support with ZIP output
+- Markdown preview before conversion
+- Custom Word template selection
+- Style preservation options
+- Metadata configuration (author, title, etc.)

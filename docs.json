@@ -32,7 +32,8 @@
         "pages": [
           "features/file-upload",
           "features/conversion",
-          "features/supported-formats"
+          "features/supported-formats",
+          "features/markdown-to-word"
         ]
       },
       {
