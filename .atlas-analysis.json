@@ -1,0 +1,62 @@
+{
+  "projectType": "frontend",
+  "projectName": "MkDowner",
+  "projectDescription": "A modern React web application for converting documents to Markdown format with drag-and-drop support.",
+  "theme": "willow",
+  "primaryColor": "#6366f1",
+  "lightColor": "#818cf8",
+  "darkColor": "#4f46e5",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Core Features",
+        "pages": [
+          "features/file-upload",
+          "features/conversion",
+          "features/supported-formats"
+        ]
+      },
+      {
+        "group": "Components",
+        "pages": [
+          "components/upload-area",
+          "components/file-list",
+          "components/header",
+          "components/supported-formats"
+        ]
+      },
+      {
+        "group": "Development",
+        "pages": [
+          "development/setup",
+          "development/hooks",
+          "development/api-integration"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Drag & drop file upload",
+    "Multiple file conversion",
+    "Real-time progress tracking",
+    "Support for PDF, DOCX, PPTX, images and more",
+    "Automatic download of converted files",
+    "Modern, responsive UI with glass morphism design"
+  ],
+  "publicApiSurface": [
+    "UploadArea component",
+    "FileList component",
+    "Header component",
+    "SupportedFormats component",
+    "useFileUpload hook",
+    "useConversionMode hook",
+    "uploadFiles API service"
+  ]
+}
