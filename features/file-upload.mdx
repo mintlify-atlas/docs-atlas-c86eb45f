@@ -1,0 +1,137 @@
+---
+title: File Upload
+description: Drag-and-drop file upload with multiple file selection and validation
+---
+
+MkDowner provides an intuitive file upload interface with drag-and-drop support, multiple file selection, and real-time validation.
+
+## Drag-and-Drop Functionality
+
+The upload area supports native browser drag-and-drop events for a seamless user experience:
+
+```tsx src/components/UploadArea/UploadArea.tsx
+const handleDragOver = (e: React.DragEvent) => {
+  e.preventDefault();
+  setIsDragOver(true);
+};
+
+const handleDragLeave = () => {
+  setIsDragOver(false);
+};
+
+const handleDrop = (e: React.DragEvent) => {
+  e.preventDefault();
+  setIsDragOver(false);
+  if (e.dataTransfer.files) {
+    onFilesSelected(e.dataTransfer.files);
+  }
+};
+```
+
+The component visually indicates when files are being dragged over the upload area by applying a CSS class:
+
+```tsx
+<div
+  className={`upload-card ${isDragOver ? 'is-dragover' : ''}`}
+  onDragOver={handleDragOver}
+  onDragLeave={handleDragLeave}
+  onDrop={handleDrop}
+>
+```
+
+## Multiple File Selection
+
+Users can select multiple files through either drag-and-drop or the file browser:
+
+```tsx src/components/UploadArea/UploadArea.tsx
+<input
+  type="file"
+  multiple
+  required
+  ref={fileInputRef}
+  onChange={handleFileChange}
+  className="upload-input-hidden"
+/>
+```
+
+The UI dynamically updates based on the number of files selected:
+
+```tsx
+const getButtonText = () => {
+  if (isUploading) return 'Converting...';
+  if (selectedFiles.length === 0) return 'Drop your PDF or browse';
+  if (selectedFiles.length === 1) return 'Convert file';
+  return `Convert ${selectedFiles.length} files`;
+};
+```
+
+## File Management
+
+The `useFileUpload` hook provides methods for managing selected files:
+
+```typescript src/hooks/useFileUpload.ts
+const handleFilesSelected = (files: FileList) => {
+  setSelectedFiles(Array.from(files));
+  setShowSuccess(false);
+};
+
+const handleRemoveFile = (index: number) => {
+  setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+};
+
+const handleClearAll = () => {
+  setSelectedFiles([]);
+  setShowSuccess(false);
+  clearFileInput();
+};
+```
+
+## File Size Limits
+
+MkDowner supports files up to **24MB** in size:
+
+<Note>
+  File size validation is enforced on the frontend. The limit is displayed to users in the upload interface.
+</Note>
+
+```tsx src/App.tsx
+{!showSuccess && (
+  <div className="hero-upload-footer">
+    Supports PDF files up to 24MB
+  </div>
+)}
+```
+
+## TypeScript Interface
+
+The upload component uses a well-defined interface for type safety:
+
+```typescript src/components/UploadArea/UploadArea.tsx
+interface UploadAreaProps {
+  onFilesSelected: (files: FileList) => void;
+  onSubmit: (files: FileList) => void;
+  isUploading: boolean;
+  progress: number;
+  selectedFiles: File[];
+  showSuccess: boolean;
+  downloadedFileName: string;
+  onNewConversion: () => void;
+}
+```
+
+## User Experience Features
+
+<CardGroup cols={2}>
+  <Card title="Click to Browse" icon="mouse-pointer">
+    The entire upload area is clickable, triggering the native file browser
+  </Card>
+  <Card title="Visual Feedback" icon="eye">
+    Drag-over states and file count indicators provide clear feedback
+  </Card>
+  <Card title="File Reset" icon="rotate-right">
+    Built-in methods to clear selections and start fresh conversions
+  </Card>
+  <Card title="State Management" icon="list-check">
+    Comprehensive state tracking for upload, progress, and success states
+  </Card>
+</CardGroup>

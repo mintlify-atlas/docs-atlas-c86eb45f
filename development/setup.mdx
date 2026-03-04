@@ -1,0 +1,241 @@
+---
+title: Development Setup
+description: Set up your local development environment for MkDowner
+---
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js**: Version 18.x or higher
+- **npm**: Version 9.x or higher (comes with Node.js)
+- **Git**: For version control
+
+## Project Structure
+
+MkDowner follows a modular React architecture:
+
+```
+src/
+├── components/           # Modularized React components
+│   ├── Container/       # Main container
+│   ├── Header/          # Header with title and subtitle
+│   ├── UploadArea/      # Upload area with drag & drop
+│   ├── FileList/        # Selected files list
+│   ├── SupportedFormats/ # Supported formats information
+│   ├── Switch/          # Mode toggle switch
+│   └── index.ts         # Component exports
+├── hooks/               # Custom hooks
+│   ├── useFileUpload.ts # File handling hook
+│   └── useConversionMode.ts # Conversion mode hook
+├── services/            # API services
+│   └── api.ts           # Backend communication functions
+├── styles/              # Global styles
+│   └── global.css       # Application global CSS
+├── types/               # TypeScript type definitions
+│   └── index.ts         # Shared types
+├── App.tsx              # Main component
+├── PandocConverter.tsx  # Pandoc converter component
+└── main.tsx             # Entry point
+```
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd mkdowner-app
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+## Environment Variables
+
+Create a `.env` file in the project root with the following configuration:
+
+```bash
+VITE_API_BASE_URL=http://localhost:5001
+```
+
+### Environment Variables Reference
+
+| Variable | Description | Default |
+|----------|-------------|--------|
+| `VITE_API_BASE_URL` | Backend API endpoint URL | `http://localhost:5001` |
+
+<Note>
+  All Vite environment variables must be prefixed with `VITE_` to be exposed to the client-side code.
+</Note>
+
+## Development Workflow
+
+### Available Scripts
+
+The following npm scripts are available in `package.json`:
+
+```json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  }
+}
+```
+
+### Running the Development Server
+
+Start the development server with hot module replacement:
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173` (default Vite port).
+
+### Type Checking
+
+Run TypeScript type checking:
+
+```bash
+npx tsc -b
+```
+
+### Linting
+
+Run ESLint to check code quality:
+
+```bash
+npm run lint
+```
+
+## Build and Deployment
+
+### Production Build
+
+Create an optimized production build:
+
+```bash
+npm run build
+```
+
+This command:
+1. Runs TypeScript build (`tsc -b`)
+2. Creates an optimized Vite build
+3. Outputs to the `dist/` directory
+
+### Preview Production Build
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
+
+## Technology Stack
+
+### Dependencies
+
+```json
+{
+  "react": "^19.2.0",
+  "react-dom": "^19.2.0",
+  "react-router-dom": "^7.9.6",
+  "sweetalert2": "^11.26.3"
+}
+```
+
+### Dev Dependencies
+
+- **Build Tool**: Vite 7.2.2
+- **Language**: TypeScript 5.9.3
+- **Linting**: ESLint 9.39.1 with TypeScript plugin
+- **React Plugin**: @vitejs/plugin-react 5.1.0
+
+## TypeScript Configuration
+
+The project uses a composite TypeScript configuration:
+
+### tsconfig.app.json (Application Config)
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"]
+}
+```
+
+### Key TypeScript Features
+
+- **Strict Mode**: Enabled for maximum type safety
+- **Module Resolution**: Bundler mode for Vite compatibility
+- **JSX**: `react-jsx` transform (no React import needed)
+- **Target**: ES2022 for modern JavaScript features
+
+## Vite Configuration
+
+The project uses a minimal Vite configuration:
+
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+})
+```
+
+### Vite Features
+
+- **Fast HMR**: Hot Module Replacement for instant updates
+- **Optimized Build**: Rollup-based production builds
+- **ESM-first**: Native ES modules support
+- **Plugin Support**: React Fast Refresh enabled
+
+## Backend Requirements
+
+<Warning>
+  The frontend requires a Python backend running on the configured `VITE_API_BASE_URL` endpoint. Ensure the backend is running before starting development.
+</Warning>
+
+The backend should expose the following endpoints:
+- `POST /upload` - File upload and conversion
+- `POST /md-to-word` - Markdown to Word conversion
+
+See [API Integration](/development/api-integration) for details.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom Hooks" icon="hook" href="/development/hooks">
+    Learn about useFileUpload and useConversionMode hooks
+  </Card>
+  <Card title="API Integration" icon="server" href="/development/api-integration">
+    Understand the API service and backend communication
+  </Card>
+</CardGroup>

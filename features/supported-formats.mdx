@@ -1,0 +1,177 @@
+---
+title: Supported Formats
+description: Complete list of file formats supported by MkDowner
+---
+
+MkDowner supports a wide range of file formats for conversion to Markdown, powered by Microsoft MarkItDown.
+
+## Documents
+
+<CardGroup cols={2}>
+  <Card title="PDF Files" icon="file-pdf">
+    `.pdf` - Portable Document Format files with text extraction
+  </Card>
+  <Card title="Word Documents" icon="file-word">
+    `.docx` - Microsoft Word documents (Office Open XML)
+  </Card>
+  <Card title="Text Files" icon="file-lines">
+    `.txt` - Plain text files
+  </Card>
+  <Card title="Rich Text" icon="file-code">
+    `.rtf` - Rich Text Format documents
+  </Card>
+</CardGroup>
+
+## Presentations & Spreadsheets
+
+<CardGroup cols={3}>
+  <Card title="PowerPoint" icon="file-powerpoint">
+    `.pptx` - PowerPoint presentations
+  </Card>
+  <Card title="Excel" icon="file-excel">
+    `.xlsx` - Excel spreadsheet files
+  </Card>
+  <Card title="CSV" icon="table">
+    `.csv` - Comma-separated values
+  </Card>
+</CardGroup>
+
+## Web & Data Formats
+
+<CardGroup cols={3}>
+  <Card title="HTML" icon="code">
+    `.html` - HTML web pages
+  </Card>
+  <Card title="JSON" icon="brackets-curly">
+    `.json` - JSON data files
+  </Card>
+  <Card title="XML" icon="file-code">
+    `.xml` - XML documents
+  </Card>
+</CardGroup>
+
+## Images & Media
+
+<CardGroup cols={2}>
+  <Card title="Images" icon="image">
+    PNG, JPG formats with OCR text extraction
+  </Card>
+  <Card title="Audio" icon="volume">
+    `.wav`, `.mp3` - Audio files for transcription
+  </Card>
+</CardGroup>
+
+## File Size Limitations
+
+<Warning>
+  Individual files must be **24MB or smaller** to ensure optimal processing performance.
+</Warning>
+
+```tsx src/App.tsx
+{!showSuccess && (
+  <div className="hero-upload-footer">
+    Supports PDF files up to 24MB
+  </div>
+)}
+```
+
+## Format Categories
+
+Formats are organized into four main categories in the UI:
+
+```tsx src/components/SupportedFormats/SupportedFormats.tsx
+<div className="supported-grid">
+  <div className="format-category">
+    <h4>Documents</h4>
+    <ul className="format-list">
+      <li>PDF files (.pdf)</li>
+      <li>Word documents (.docx)</li>
+      <li>Text files (.txt)</li>
+      <li>Rich Text (.rtf)</li>
+    </ul>
+  </div>
+
+  <div className="format-category">
+    <h4>Presentations &amp; Spreadsheets</h4>
+    <ul className="format-list">
+      <li>PowerPoint (.pptx)</li>
+      <li>Excel files (.xlsx)</li>
+      <li>CSV files (.csv)</li>
+    </ul>
+  </div>
+
+  <div className="format-category">
+    <h4>Web &amp; Data</h4>
+    <ul className="format-list">
+      <li>HTML files (.html)</li>
+      <li>JSON files (.json)</li>
+      <li>XML files (.xml)</li>
+    </ul>
+  </div>
+
+  <div className="format-category">
+    <h4>Images &amp; Media</h4>
+    <ul className="format-list">
+      <li>PNG, JPG images</li>
+      <li>Audio files (.wav, .mp3)</li>
+      <li>OCR text extraction</li>
+    </ul>
+  </div>
+</div>
+```
+
+## Backend Requirements
+
+MkDowner relies on Microsoft MarkItDown for conversion:
+
+<Info>
+  The backend must have MarkItDown installed and properly configured. The conversion engine handles format detection automatically.
+</Info>
+
+### API Endpoint
+
+The backend exposes a single upload endpoint:
+
+```typescript
+POST /upload
+Content-Type: multipart/form-data
+```
+
+### Response Format
+
+- **Single file**: Returns `.md` file directly
+- **Multiple files**: Returns `.zip` archive containing all converted Markdown files
+
+## Format-Specific Notes
+
+<AccordionGroup>
+  <Accordion title="PDF Files">
+    Text is extracted from PDFs. Image-based PDFs may require OCR capabilities on the backend for best results.
+  </Accordion>
+  <Accordion title="Office Documents">
+    DOCX, PPTX, and XLSX files are parsed for structure and content. Formatting is converted to Markdown equivalents where possible.
+  </Accordion>
+  <Accordion title="Images">
+    PNG and JPG images can have text extracted via OCR. This feature requires additional backend configuration.
+  </Accordion>
+  <Accordion title="Audio Files">
+    WAV and MP3 files can be transcribed to text. Transcription capabilities depend on backend setup.
+  </Accordion>
+  <Accordion title="Web Formats">
+    HTML is converted to clean Markdown. JSON and XML are formatted as structured text.
+  </Accordion>
+</AccordionGroup>
+
+## AI-Enhanced Conversion
+
+<Tip>
+  MkDowner uses Microsoft MarkItDown with AI-enhanced conversion for better formatting preservation and structure recognition.
+</Tip>
+
+This enables:
+
+- Intelligent table detection and conversion
+- Header hierarchy preservation
+- List structure recognition
+- Code block formatting
+- Link and reference handling

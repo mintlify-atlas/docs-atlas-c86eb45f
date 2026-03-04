@@ -1,80 +1,265 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart
+description: Get MkDowner up and running in minutes
 ---
 
-## Get started in three steps
+## Prerequisites
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
+Before you begin, make sure you have the following installed:
 
 <CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Node.js" icon="node-js">
+    Version 18.x or higher
+  </Card>
+  <Card title="npm" icon="npm">
+    Comes bundled with Node.js
+  </Card>
+  <Card title="Git" icon="git">
+    For cloning the repository
+  </Card>
+  <Card title="Python Backend" icon="python">
+    Backend API server (optional for development)
+  </Card>
 </CardGroup>
 
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
+## Installation
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the MkDowner repository from GitHub:
+    
+    ```bash
+    git clone https://github.com/UlisesGarcia20/app-markdown.git
+    cd app-markdown
+    ```
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all required npm packages:
+    
+    <CodeGroup>
+    ```bash npm
+    npm install
+    ```
+    ```bash yarn
+    yarn install
+    ```
+    ```bash pnpm
+    pnpm install
+    ```
+    </CodeGroup>
+    
+    This will install the following key dependencies:
+    - React 19.2.0
+    - React Router DOM 7.9.6
+    - SweetAlert2 11.26.3
+    - TypeScript and Vite dev tools
+  </Step>
+
+  <Step title="Configure environment variables">
+    Create a `.env` file in the project root and configure the backend API URL:
+    
+    ```bash
+    VITE_API_BASE_URL=http://localhost:5001
+    ```
+    
+    <Note>
+      The `VITE_` prefix is required for Vite to expose the variable to the client-side code.
+    </Note>
+    
+    <Warning>
+      Make sure your Python backend is running on the configured port before attempting file conversions.
+    </Warning>
+  </Step>
+
+  <Step title="Start the development server">
+    Launch the Vite development server:
+    
+    ```bash
+    npm run dev
+    ```
+    
+    The application will start on `http://localhost:5173` by default.
+    
+    <Accordion title="Expected output">
+      ```bash
+      VITE v7.2.2  ready in 342 ms
+      
+      ➜  Local:   http://localhost:5173/
+      ➜  Network: use --host to expose
+      ➜  press h + enter to show help
+      ```
+    </Accordion>
+  </Step>
+
+  <Step title="Open and test the application">
+    Open your browser and navigate to `http://localhost:5173`.
+    
+    You should see the MkDowner interface with:
+    - Hero section with "Transform Documents into Markdown"
+    - Drag-and-drop upload area
+    - File format information
+    
+    Try uploading a PDF or DOCX file to test the conversion!
+  </Step>
+</Steps>
+
+## Available Scripts
+
+The project includes several npm scripts defined in `package.json`:
+
+| Script | Command | Description |
+|--------|---------|-------------|
+| `dev` | `vite` | Start development server with hot reload |
+| `build` | `tsc -b && vite build` | Type-check and build for production |
+| `lint` | `eslint .` | Run ESLint to check code quality |
+| `preview` | `vite preview` | Preview production build locally |
+
+### Development Workflow
+
+```bash
+# Start dev server
+npm run dev
+
+# In another terminal, run linter
+npm run lint
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## Troubleshooting
+
+<Accordion title="Backend connection errors">
+  If you see "Cannot connect to server" errors:
+  
+  1. Verify the backend is running on the configured port
+  2. Check the `VITE_API_BASE_URL` in your `.env` file
+  3. Ensure no firewall is blocking the connection
+  
+  The error handling code from `api.ts`:
+  
+  ```typescript
+  catch (error) {
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error('Cannot connect to server. Make sure backend is running on ' + API_BASE_URL);
+    }
+    throw error;
+  }
+  ```
+</Accordion>
+
+<Accordion title="Port already in use">
+  If port 5173 is already in use, Vite will automatically try the next available port. You can also specify a custom port:
+  
+  ```bash
+  npm run dev -- --port 3000
+  ```
+</Accordion>
+
+<Accordion title="TypeScript errors">
+  If you encounter TypeScript errors during build:
+  
+  1. Make sure all dependencies are installed: `npm install`
+  2. Delete `node_modules` and reinstall: `rm -rf node_modules && npm install`
+  3. Check TypeScript version: `npx tsc --version` (should be ~5.9.3)
+</Accordion>
+
+<Accordion title="File upload size limits">
+  The application supports files up to **24MB**. If you need to increase this:
+  
+  1. Update the frontend validation in your upload component
+  2. Configure the backend to accept larger files
+  3. Consider adjusting nginx/reverse proxy limits if deployed
+</Accordion>
+
+## Development Tips
+
+<Tip>
+  **Hot Module Replacement (HMR)** is enabled by default. Save any file and see changes instantly without losing application state.
+</Tip>
+
+<Info>
+  The app uses React 19's new features. Make sure to familiarize yourself with the latest React patterns if you plan to extend the codebase.
+</Info>
+
+## Project Structure
+
+```
+app-markdown/
+├── src/
+│   ├── components/        # React components
+│   │   ├── Container/
+│   │   ├── FileList/
+│   │   ├── Header/
+│   │   ├── SupportedFormats/
+│   │   ├── Switch/
+│   │   └── UploadArea/
+│   ├── hooks/            # Custom hooks
+│   │   ├── useConversionMode.ts
+│   │   └── useFileUpload.ts
+│   ├── services/         # API services
+│   │   └── api.ts
+│   ├── types/           # TypeScript types
+│   │   └── index.ts
+│   ├── App.tsx          # Main app component
+│   ├── App.css          # Global styles
+│   └── main.tsx         # Entry point
+├── public/              # Static assets
+├── .env                 # Environment variables (create this)
+├── package.json         # Dependencies and scripts
+├── tsconfig.json        # TypeScript configuration
+├── vite.config.ts       # Vite configuration
+└── eslint.config.js     # ESLint configuration
+```
+
+## Building for Production
+
+When you're ready to deploy:
+
+<Steps>
+  <Step title="Build the application">
+    ```bash
+    npm run build
+    ```
+    
+    This creates an optimized production build in the `dist/` directory.
+  </Step>
+
+  <Step title="Test the production build">
+    ```bash
+    npm run preview
+    ```
+    
+    Preview the production build locally before deploying.
+  </Step>
+
+  <Step title="Deploy">
+    The `dist/` folder contains all static assets. Deploy to:
+    - Azure Static Web Apps (config included in `staticwebapp.config.json`)
+    - Vercel, Netlify, or any static hosting service
+    - Your own web server
+  </Step>
+</Steps>
+
+## Next Steps
+
+Now that you have MkDowner running, explore these topics:
+
+<CardGroup cols={2}>
+  <Card title="File Upload" icon="upload" href="/features/file-upload">
+    Learn about the drag-and-drop functionality
+  </Card>
+  <Card title="Components" icon="cube" href="/components/upload-area">
+    Explore the React component architecture
+  </Card>
+  <Card title="Custom Hooks" icon="hook" href="/development/hooks">
+    Understand the useFileUpload hook
+  </Card>
+  <Card title="API Integration" icon="plug" href="/development/api-integration">
+    Connect to the backend conversion service
+  </Card>
+</CardGroup>

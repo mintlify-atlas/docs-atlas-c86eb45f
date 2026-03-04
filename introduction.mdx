@@ -1,0 +1,167 @@
+---
+title: Introduction
+description: Transform documents into clean Markdown with MkDowner's powerful conversion engine
+---
+
+## What is MkDowner?
+
+MkDowner is a modern React web application that converts various document formats into clean, readable Markdown. Built with a React frontend and powered by Microsoft MarkItDown on the backend, it provides a seamless drag-and-drop experience for document conversion.
+
+<CardGroup cols={2}>
+  <Card title="Fast Conversion" icon="bolt">
+    Convert documents instantly with real-time progress tracking
+  </Card>
+  <Card title="Multiple Formats" icon="file">
+    Support for PDF, DOCX, PPTX, images, and more
+  </Card>
+  <Card title="Batch Processing" icon="layer-group">
+    Convert multiple files at once with automatic ZIP packaging
+  </Card>
+  <Card title="Free & Secure" icon="shield-check">
+    No signup required, files processed securely
+  </Card>
+</CardGroup>
+
+## Key Features
+
+### Drag & Drop Interface
+
+MkDowner features an intuitive drag-and-drop upload area built with React. Simply drop your files or click to browse:
+
+```tsx
+const handleDrop = (e: React.DragEvent) => {
+  e.preventDefault();
+  setIsDragOver(false);
+  if (e.dataTransfer.files) {
+    onFilesSelected(e.dataTransfer.files);
+  }
+};
+```
+
+### Real-Time Progress Tracking
+
+Watch your files convert with live progress indicators:
+
+```tsx
+const progressInterval = setInterval(() => {
+  setProgress(prev => {
+    const newProgress = prev + Math.random() * 15;
+    return newProgress >= 90 ? 90 : newProgress;
+  });
+}, 200);
+```
+
+### Automatic Downloads
+
+Converted files download automatically - single files as `.md`, multiple files as `.zip`:
+
+```tsx
+const fileName = files.length === 1 ? 
+  `${files[0].name.split('.')[0]}.md` : 
+  'converted_files.zip';
+```
+
+## Supported File Formats
+
+MkDowner supports a wide range of document formats:
+
+<Accordion title="Documents">
+  - PDF files (.pdf)
+  - Word documents (.docx)
+  - Text files (.txt)
+  - Rich Text (.rtf)
+</Accordion>
+
+<Accordion title="Presentations & Spreadsheets">
+  - PowerPoint (.pptx)
+  - Excel files (.xlsx)
+  - CSV files (.csv)
+</Accordion>
+
+<Accordion title="Web & Data">
+  - HTML files (.html)
+  - JSON files (.json)
+  - XML files (.xml)
+</Accordion>
+
+<Accordion title="Images & Media">
+  - PNG, JPG images
+  - Audio files (.wav, .mp3)
+  - OCR text extraction
+</Accordion>
+
+<Note>
+  Powered by Microsoft MarkItDown with AI-enhanced conversion for better formatting preservation.
+</Note>
+
+## Architecture Overview
+
+MkDowner follows a modern, modular architecture:
+
+### Frontend (React + TypeScript + Vite)
+
+```
+src/
+├── components/          # Modularized React components
+│   ├── UploadArea/     # Drag & drop upload interface
+│   ├── FileList/       # Selected files display
+│   ├── Header/         # App header and branding
+│   └── SupportedFormats/ # Format information
+├── hooks/              # Custom React hooks
+│   └── useFileUpload.ts # File handling logic
+├── services/           # API communication
+│   └── api.ts         # Backend integration
+└── App.tsx            # Main application component
+```
+
+### Backend (Python + Microsoft MarkItDown)
+
+The backend API handles file conversion through a simple REST endpoint:
+
+```typescript
+const response = await fetch(`${API_BASE_URL}/upload`, {
+  method: 'POST',
+  body: formData,
+});
+```
+
+<Info>
+  The frontend communicates with the backend via the `/upload` endpoint, which processes files and returns converted Markdown or ZIP archives.
+</Info>
+
+## Use Cases
+
+### Content Migration
+Convert legacy documentation from Word or PDF to Markdown for modern documentation platforms.
+
+### Knowledge Base Creation
+Transform presentation slides and spreadsheets into searchable Markdown documentation.
+
+### OCR and Text Extraction
+Extract text from images and scanned documents into editable Markdown format.
+
+### Batch Document Processing
+Convert entire folders of mixed document types into a unified Markdown archive.
+
+## Technical Benefits
+
+<CardGroup cols={2}>
+  <Card title="Modern Stack" icon="react">
+    React 19, TypeScript, and Vite for fast development
+  </Card>
+  <Card title="Component-Based" icon="cubes">
+    Modular architecture with reusable components
+  </Card>
+  <Card title="Type Safety" icon="shield">
+    Full TypeScript coverage for robust code
+  </Card>
+  <Card title="Responsive Design" icon="mobile">
+    Optimized for desktop and mobile devices
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+  Get MkDowner running locally in under 5 minutes
+</Card>

@@ -1,0 +1,197 @@
+---
+title: "SupportedFormats"
+description: "Display supported file formats for conversion"
+---
+
+## Overview
+
+The `SupportedFormats` component displays a comprehensive list of all file formats supported by MkDowner. It organizes formats into categories and provides users with clear information about what files can be converted to Markdown.
+
+### Key Features
+
+- Categorized format display
+- Four main categories: Documents, Presentations & Spreadsheets, Web & Data, Images & Media
+- Technology attribution (Microsoft MarkItDown)
+- No props required (static content)
+- Responsive grid layout
+
+## Props
+
+This component does not accept any props. It renders static content displaying supported file formats.
+
+## Usage Example
+
+```tsx
+import { SupportedFormats } from './components/SupportedFormats/SupportedFormats';
+
+function App() {
+  return (
+    <div className="app">
+      <UploadArea {...uploadProps} />
+      <SupportedFormats />
+    </div>
+  );
+}
+```
+
+## Supported File Formats
+
+The component displays the following formats, organized by category:
+
+### Documents
+
+- PDF files (.pdf)
+- Word documents (.docx)
+- Text files (.txt)
+- Rich Text (.rtf)
+
+### Presentations & Spreadsheets
+
+- PowerPoint (.pptx)
+- Excel files (.xlsx)
+- CSV files (.csv)
+
+### Web & Data
+
+- HTML files (.html)
+- JSON files (.json)
+- XML files (.xml)
+
+### Images & Media
+
+- PNG, JPG images
+- Audio files (.wav, .mp3)
+- OCR text extraction
+
+## Component Structure
+
+The component consists of:
+
+1. **Header Section**
+   - Icon (📋)
+   - Title: "Supported File Formats"
+   - Subtitle: "Works out-of-the-box with the formats you use every day."
+
+2. **Format Grid**
+   - Four category sections
+   - Each category has a heading and bulleted list
+   - Responsive grid layout
+
+3. **Technology Attribution**
+   - Credits Microsoft MarkItDown
+   - Mentions AI-enhanced conversion
+
+## Styling & Customization
+
+The component uses CSS classes from `SupportedFormats.css`:
+
+- `.supported-card` - Main container
+- `.supported-header` - Header section with icon and titles
+- `.supported-icon` - Icon wrapper
+- `.supported-title` - Main heading
+- `.supported-subtitle` - Descriptive subtitle
+- `.supported-grid` - Grid container for categories
+- `.format-category` - Individual category section
+- `.format-list` - Bulleted list of formats
+- `.supported-tip` - Technology attribution footer
+
+### Customization Options
+
+While the component doesn't accept props, you can customize it by:
+
+1. **Adding/Removing Formats**: Edit the JSX to include additional file types
+2. **Reorganizing Categories**: Change category names or groupings
+3. **Updating Styling**: Modify `SupportedFormats.css` for different layouts
+4. **Making it Dynamic**: Convert to accept props for dynamic format lists
+
+## Implementation Details
+
+### Source Code Location
+
+`~/workspace/source/src/components/SupportedFormats/SupportedFormats.tsx:4-62`
+
+### Key Implementation Notes
+
+- Simple functional component with no state or props
+- Uses semantic HTML with proper heading hierarchy (h3, h4)
+- Grid layout allows responsive reorganization
+- HTML entities used for proper character encoding (`&amp;` for "&")
+
+## Extending the Component
+
+If you need to make the supported formats dynamic, consider this pattern:
+
+### Making Formats Dynamic
+
+```tsx
+interface Format {
+  name: string;
+  extensions: string[];
+}
+
+interface FormatCategory {
+  title: string;
+  formats: Format[];
+}
+
+interface SupportedFormatsProps {
+  categories?: FormatCategory[];
+}
+
+export const SupportedFormats = ({ categories }: SupportedFormatsProps) => {
+  const defaultCategories: FormatCategory[] = [
+    {
+      title: "Documents",
+      formats: [
+        { name: "PDF files", extensions: [".pdf"] },
+        { name: "Word documents", extensions: [".docx"] },
+        // ...
+      ]
+    },
+    // ...
+  ];
+
+  const displayCategories = categories || defaultCategories;
+
+  return (
+    <div className="supported-card">
+      {/* Header */}
+      <div className="supported-grid">
+        {displayCategories.map((category, idx) => (
+          <div key={idx} className="format-category">
+            <h4>{category.title}</h4>
+            <ul className="format-list">
+              {category.formats.map((format, fIdx) => (
+                <li key={fIdx}>
+                  {format.name} ({format.extensions.join(", ")})
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      {/* Footer */}
+    </div>
+  );
+};
+```
+
+### Integrating with API
+
+You could fetch supported formats from your backend:
+
+```tsx
+function App() {
+  const [formats, setFormats] = useState<FormatCategory[]>([]);
+
+  useEffect(() => {
+    fetch('/api/supported-formats')
+      .then(res => res.json())
+      .then(data => setFormats(data));
+  }, []);
+
+  return <SupportedFormats categories={formats} />;
+}
+```
+
+This approach allows you to update supported formats without changing the component code.

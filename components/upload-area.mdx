@@ -1,0 +1,179 @@
+---
+title: "UploadArea"
+description: "Main file upload component with drag-and-drop support and conversion feedback"
+---
+
+## Overview
+
+The `UploadArea` component is the central interface for file uploads in MkDowner. It provides an intuitive drag-and-drop zone, handles file selection, displays upload progress, and shows conversion success states.
+
+### Key Features
+
+- Drag-and-drop file upload
+- Click-to-browse file selection
+- Multiple file support
+- Upload progress tracking
+- Success state with download confirmation
+- Responsive visual feedback
+
+## Props
+
+<ParamField path="onFilesSelected" type="(files: FileList) => void" required>
+  Callback function triggered when files are selected (via drag-and-drop or file browser).
+</ParamField>
+
+<ParamField path="onSubmit" type="(files: FileList) => void" required>
+  Callback function triggered when the user submits files for conversion.
+</ParamField>
+
+<ParamField path="isUploading" type="boolean" required>
+  Indicates whether files are currently being uploaded/converted.
+</ParamField>
+
+<ParamField path="progress" type="number" required>
+  Upload progress percentage (0-100). Used to display the progress bar during conversion.
+</ParamField>
+
+<ParamField path="selectedFiles" type="File[]" required>
+  Array of currently selected files. Used to display file count and enable/disable submit button.
+</ParamField>
+
+<ParamField path="showSuccess" type="boolean" required>
+  Controls whether to display the success state after successful conversion.
+</ParamField>
+
+<ParamField path="downloadedFileName" type="string" required>
+  Name of the downloaded file shown in the success message.
+</ParamField>
+
+<ParamField path="onNewConversion" type="() => void" required>
+  Callback function triggered when the user clicks "Convert New Files" button in success state.
+</ParamField>
+
+## Usage Example
+
+```tsx
+import { UploadArea } from './components/UploadArea/UploadArea';
+import { useFileUpload } from './hooks/useFileUpload';
+
+function App() {
+  const {
+    selectedFiles,
+    isUploading,
+    progress,
+    showSuccess,
+    downloadedFileName,
+    handleFilesSelected,
+    handleSubmit,
+    handleNewConversion
+  } = useFileUpload();
+
+  return (
+    <UploadArea
+      onFilesSelected={handleFilesSelected}
+      onSubmit={handleSubmit}
+      isUploading={isUploading}
+      progress={progress}
+      selectedFiles={selectedFiles}
+      showSuccess={showSuccess}
+      downloadedFileName={downloadedFileName}
+      onNewConversion={handleNewConversion}
+    />
+  );
+}
+```
+
+## Integration with Hooks
+
+The `UploadArea` component works seamlessly with the `useFileUpload` hook, which manages file state and conversion logic:
+
+```tsx
+const {
+  selectedFiles,
+  isUploading,
+  progress,
+  showSuccess,
+  downloadedFileName,
+  handleFilesSelected,
+  handleSubmit,
+  handleNewConversion
+} = useFileUpload();
+```
+
+See [useFileUpload](/development/hooks#usefileupload) for complete hook documentation.
+
+## Component Behavior
+
+### Default State
+
+Displays a drag-and-drop zone with:
+- Upload icon
+- Instructions: "Drop your PDF here or click to browse"
+- Supported formats message
+- Disabled submit button (enabled after file selection)
+
+### File Selected State
+
+After files are selected:
+- Updates subtext to show file count: "X file(s) selected"
+- Enables submit button with dynamic text:
+  - Single file: "Convert file"
+  - Multiple files: "Convert X files"
+
+### Uploading State
+
+During conversion:
+- Button text changes to "Converting..."
+- Progress bar appears showing conversion progress
+- Submit button is disabled
+
+### Success State
+
+After successful conversion:
+- Shows success icon (✅)
+- Displays message: "Conversion Successful!"
+- Shows downloaded file name
+- Provides "Convert New Files" button to reset the form
+
+## Styling & Customization
+
+The component uses CSS classes from `UploadArea.css`:
+
+- `.upload-card` - Main container
+- `.is-dragover` - Applied during drag-over state
+- `.success-state` - Applied when showing success message
+- `.progress-bar` - Progress indicator styling
+- `.primary-btn` - Submit button styling
+
+### Drag-and-Drop Visual Feedback
+
+The component automatically adds the `is-dragover` class when files are dragged over the drop zone, providing visual feedback to users.
+
+## Implementation Details
+
+### Source Code Location
+
+`~/workspace/source/src/components/UploadArea/UploadArea.tsx:15-140`
+
+### TypeScript Interface
+
+```tsx
+interface UploadAreaProps {
+  onFilesSelected: (files: FileList) => void;
+  onSubmit: (files: FileList) => void;
+  isUploading: boolean;
+  progress: number;
+  selectedFiles: File[];
+  showSuccess: boolean;
+  downloadedFileName: string;
+  onNewConversion: () => void;
+}
+```
+
+### Key Implementation Notes
+
+- Uses `useRef` for hidden file input element
+- Handles drag events: `onDragOver`, `onDragLeave`, `onDrop`
+- Converts `File[]` array to `FileList` for submission using `DataTransfer` API
+- Dynamic button text based on state and file count
+- Form submission prevents default browser behavior

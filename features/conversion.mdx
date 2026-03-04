@@ -1,0 +1,222 @@
+---
+title: Conversion Process
+description: How MkDowner handles file conversion from upload to download
+---
+
+MkDowner provides a streamlined conversion workflow with progress tracking, error handling, and automatic downloads.
+
+## Conversion Flow
+
+The conversion process follows these steps:
+
+1. File validation and selection
+2. Upload to backend API
+3. Server-side processing with MarkItDown
+4. Progress simulation on frontend
+5. Download of converted file(s)
+6. Success confirmation
+
+## Upload Implementation
+
+The `useFileUpload` hook handles the complete upload lifecycle:
+
+```typescript src/hooks/useFileUpload.ts
+const handleUpload = async (files: FileList) => {
+  if (files.length === 0) {
+    alert('Please select at least one file');
+    return;
+  }
+
+  setIsUploading(true);
+  setProgress(0);
+  setShowSuccess(false);
+
+  // Simulate progress
+  const progressInterval = setInterval(() => {
+    setProgress(prev => {
+      const newProgress = prev + Math.random() * 15;
+      return newProgress >= 90 ? 90 : newProgress;
+    });
+  }, 200);
+
+  try {
+    const blob = await uploadFiles(files);
+    
+    // Complete progress
+    clearInterval(progressInterval);
+    setProgress(100);
+
+    // Download the result
+    const fileName = files.length === 1 ? 
+      `${files[0].name.split('.')[0]}.md` : 
+      'converted_files.zip';
+    
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    // Show success message
+    setDownloadedFileName(fileName);
+    setIsUploading(false);
+    setShowSuccess(true);
+
+  } catch (error) {
+    clearInterval(progressInterval);
+    setIsUploading(false);
+    setProgress(0);
+    alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};
+```
+
+## Progress Tracking
+
+Progress is simulated on the frontend using an interval-based approach:
+
+<Steps>
+  <Step title="Initialize Progress">
+    Set progress to 0% when upload begins
+  </Step>
+  <Step title="Simulate Progress">
+    Increment progress randomly up to 90% while waiting for server response
+  </Step>
+  <Step title="Complete Progress">
+    Jump to 100% when server returns the converted file
+  </Step>
+</Steps>
+
+### Progress Bar UI
+
+```tsx src/components/UploadArea/UploadArea.tsx
+{isUploading && (
+  <div className="progress">
+    <div
+      className="progress-bar"
+      style={{ width: `${progress}%` }}
+    ></div>
+  </div>
+)}
+```
+
+## API Service
+
+The API service communicates with the backend using FormData:
+
+```typescript src/services/api.ts
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+export const uploadFiles = async (files: FileList): Promise<Blob> => {
+  try {
+    const formData = new FormData();
+    
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Server returned JSON instead of file');
+    }
+
+    return response.blob();
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error('Cannot connect to server. Make sure backend is running on ' + API_BASE_URL);
+    }
+    throw error;
+  }
+};
+```
+
+<Note>
+  The API expects files to be sent with the `files` field name in the FormData.
+</Note>
+
+## Error Handling
+
+MkDowner handles multiple error scenarios:
+
+<AccordionGroup>
+  <Accordion title="Network Errors">
+    Catches `TypeError` from failed fetch requests and displays a helpful message about checking if the backend is running.
+  </Accordion>
+  <Accordion title="HTTP Errors">
+    Checks response status and throws descriptive errors with status codes.
+  </Accordion>
+  <Accordion title="Server Errors">
+    Detects when server returns JSON error responses instead of file blobs.
+  </Accordion>
+  <Accordion title="Validation Errors">
+    Alerts users if no files are selected before attempting upload.
+  </Accordion>
+</AccordionGroup>
+
+## Automatic Download
+
+After successful conversion, files are automatically downloaded:
+
+- **Single file**: Named `{original-name}.md`
+- **Multiple files**: Packaged as `converted_files.zip`
+
+The download uses a temporary blob URL that is properly cleaned up:
+
+```typescript
+const url = window.URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = fileName;
+document.body.appendChild(a);
+a.click();
+window.URL.revokeObjectURL(url);  // Cleanup
+document.body.removeChild(a);      // Remove element
+```
+
+## Success State
+
+After successful conversion, users see a success screen:
+
+```tsx src/components/UploadArea/UploadArea.tsx
+if (showSuccess) {
+  return (
+    <div className="upload-card success-state">
+      <div className="upload-card-inner">
+        <span className="success-icon">✅</span>
+        <div className="success-text">Conversion Successful!</div>
+        <div className="success-subtext">
+          Your file "{downloadedFileName}" has been downloaded
+        </div>
+        <button
+          type="button"
+          className="primary-btn"
+          onClick={onNewConversion}
+        >
+          Convert New Files
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## Configuration
+
+Set the backend API URL in your `.env` file:
+
+```bash
+VITE_API_BASE_URL=http://localhost:5001
+```

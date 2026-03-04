@@ -1,0 +1,144 @@
+---
+title: "Header"
+description: "Application header with branding and navigation"
+---
+
+## Overview
+
+The `Header` component provides the top-level navigation bar for the MkDowner application. It displays the application branding with a custom icon and the "MarkConvert" name.
+
+### Key Features
+
+- Application branding display
+- SVG icon for document conversion
+- Consistent top-bar styling
+- No props required (static content)
+
+## Props
+
+This component does not accept any props. It renders static branding content.
+
+## Usage Example
+
+```tsx
+import { Header } from './components/Header/Header';
+
+function App() {
+  return (
+    <div className="app">
+      <Header />
+      {/* Rest of your application */}
+    </div>
+  );
+}
+```
+
+## Component Structure
+
+The header consists of:
+
+1. **Container** (`<header className="topbar">`)
+   - Semantic HTML5 `<header>` element
+   - Provides consistent top-level navigation structure
+
+2. **Inner Wrapper** (`<div className="topbar-inner">`)
+   - Content container for alignment and spacing
+
+3. **Brand Section** (`<div className="topbar-brand">`)
+   - Icon wrapper with SVG document icon
+   - Brand name text: "MarkConvert"
+
+## SVG Icon
+
+The component includes an inline SVG icon representing a document:
+
+```tsx
+<svg className="brand-icon" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+</svg>
+```
+
+This icon depicts a document with a folded corner, appropriate for a file conversion application.
+
+## Styling & Customization
+
+The component uses CSS classes from `Header.css`:
+
+- `.topbar` - Main header container
+- `.topbar-inner` - Inner content wrapper
+- `.topbar-brand` - Brand section container
+- `.brand-icon-wrapper` - SVG icon container
+- `.brand-icon` - SVG icon styling
+- `.brand-name` - Brand text styling
+
+### Customization Options
+
+While the component doesn't accept props, you can customize it by:
+
+1. **Modifying the CSS**: Edit `Header.css` to change colors, spacing, or typography
+2. **Updating the SVG**: Replace the document icon with a different SVG path
+3. **Changing the brand name**: Edit the text content from "MarkConvert" to your preferred name
+4. **Extending functionality**: Add navigation links or buttons to the header
+
+## Implementation Details
+
+### Source Code Location
+
+`~/workspace/source/src/components/Header/Header.tsx:4-20`
+
+### Key Implementation Notes
+
+- Simple functional component with no state or props
+- Uses semantic HTML5 `<header>` element for accessibility
+- SVG icon uses `currentColor` for easy color theming via CSS
+- Icon viewBox set to `"0 0 24 24"` for consistent scaling
+
+## Extending the Header
+
+If you need to add functionality to the header, consider these common patterns:
+
+### Adding Navigation Links
+
+```tsx
+export const Header = () => {
+  return (
+    <header className="topbar">
+      <div className="topbar-inner">
+        <div className="topbar-brand">
+          {/* Existing brand content */}
+        </div>
+        <nav className="topbar-nav">
+          <a href="/docs">Documentation</a>
+          <a href="/about">About</a>
+        </nav>
+      </div>
+    </header>
+  );
+};
+```
+
+### Adding Props for Dynamic Content
+
+```tsx
+interface HeaderProps {
+  brandName?: string;
+  showNav?: boolean;
+}
+
+export const Header = ({ 
+  brandName = "MarkConvert",
+  showNav = false 
+}: HeaderProps) => {
+  return (
+    <header className="topbar">
+      <div className="topbar-inner">
+        <div className="topbar-brand">
+          {/* Icon */}
+          <span className="brand-name">{brandName}</span>
+        </div>
+        {showNav && <nav>...</nav>}
+      </div>
+    </header>
+  );
+};
+```

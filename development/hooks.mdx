@@ -1,0 +1,404 @@
+---
+title: Custom Hooks
+description: React hooks for file upload and conversion mode management
+---
+
+## Overview
+
+MkDowner uses custom React hooks to encapsulate state management and business logic. This page documents the two main hooks used in the application.
+
+## useFileUpload
+
+The `useFileUpload` hook manages file selection, upload state, progress tracking, and API communication.
+
+### Location
+
+`src/hooks/useFileUpload.ts`
+
+### Full Implementation
+
+```typescript
+import { useState, useRef } from 'react';
+import { uploadFiles } from '../services/api';
+
+export const useFileUpload = () => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [downloadedFileName, setDownloadedFileName] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFilesSelected = (files: FileList) => {
+    setSelectedFiles(Array.from(files));
+    setShowSuccess(false);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleClearAll = () => {
+    setSelectedFiles([]);
+    setShowSuccess(false);
+    clearFileInput();
+  };
+
+  const handleNewConversion = () => {
+    setSelectedFiles([]);
+    setShowSuccess(false);
+    setProgress(0);
+    clearFileInput();
+  };
+
+  const clearFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleUpload = async (files: FileList) => {
+    if (files.length === 0) {
+      alert('Please select at least one file');
+      return;
+    }
+
+    setIsUploading(true);
+    setProgress(0);
+    setShowSuccess(false);
+
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev + Math.random() * 15;
+        return newProgress >= 90 ? 90 : newProgress;
+      });
+    }, 200);
+
+    try {
+      const blob = await uploadFiles(files);
+      
+      // Complete progress
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      // Download the result
+      const fileName = files.length === 1 ? 
+        `${files[0].name.split('.')[0]}.md` : 
+        'converted_files.zip';
+      
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      // Show success message
+      setDownloadedFileName(fileName);
+      setIsUploading(false);
+      setShowSuccess(true);
+
+    } catch (error) {
+      clearInterval(progressInterval);
+      setIsUploading(false);
+      setProgress(0);
+      alert(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  return {
+    selectedFiles,
+    isUploading,
+    progress,
+    showSuccess,
+    downloadedFileName,
+    fileInputRef,
+    handleFilesSelected,
+    handleRemoveFile,
+    handleClearAll,
+    handleNewConversion,
+    handleUpload,
+    clearFileInput
+  };
+};
+```
+
+### State Management
+
+The hook manages the following state:
+
+| State | Type | Description |
+|-------|------|-------------|
+| `selectedFiles` | `File[]` | Array of files selected for upload |
+| `isUploading` | `boolean` | Upload in progress flag |
+| `progress` | `number` | Upload progress percentage (0-100) |
+| `showSuccess` | `boolean` | Success message visibility flag |
+| `downloadedFileName` | `string` | Name of the downloaded file |
+| `fileInputRef` | `RefObject<HTMLInputElement>` | Reference to file input element |
+
+### Return Values
+
+The hook returns an object with the following properties and methods:
+
+#### State Properties
+
+```typescript
+{
+  selectedFiles: File[],
+  isUploading: boolean,
+  progress: number,
+  showSuccess: boolean,
+  downloadedFileName: string,
+  fileInputRef: RefObject<HTMLInputElement>
+}
+```
+
+#### Methods
+
+**`handleFilesSelected(files: FileList): void`**
+
+Handles file selection from the input element.
+
+```typescript
+const { handleFilesSelected } = useFileUpload();
+
+// In component
+<input 
+  type="file" 
+  onChange={(e) => e.target.files && handleFilesSelected(e.target.files)}
+/>
+```
+
+**`handleRemoveFile(index: number): void`**
+
+Removes a file from the selected files array by index.
+
+```typescript
+const { selectedFiles, handleRemoveFile } = useFileUpload();
+
+// Remove second file
+handleRemoveFile(1);
+```
+
+**`handleClearAll(): void`**
+
+Clears all selected files and resets the file input.
+
+```typescript
+const { handleClearAll } = useFileUpload();
+
+<button onClick={handleClearAll}>Clear All</button>
+```
+
+**`handleNewConversion(): void`**
+
+Resets the hook state for a new conversion (clears files, progress, and success state).
+
+```typescript
+const { handleNewConversion } = useFileUpload();
+
+<button onClick={handleNewConversion}>New Conversion</button>
+```
+
+**`handleUpload(files: FileList): Promise<void>`**
+
+Uploads files to the backend and handles the download of converted files.
+
+```typescript
+const { handleUpload } = useFileUpload();
+
+<button onClick={() => handleUpload(fileList)}>Upload</button>
+```
+
+### Usage Example
+
+```typescript
+import { useFileUpload } from './hooks/useFileUpload';
+
+function UploadComponent() {
+  const {
+    selectedFiles,
+    isUploading,
+    progress,
+    showSuccess,
+    downloadedFileName,
+    fileInputRef,
+    handleFilesSelected,
+    handleRemoveFile,
+    handleClearAll,
+    handleUpload
+  } = useFileUpload();
+
+  return (
+    <div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        onChange={(e) => e.target.files && handleFilesSelected(e.target.files)}
+      />
+      
+      {selectedFiles.map((file, index) => (
+        <div key={index}>
+          {file.name}
+          <button onClick={() => handleRemoveFile(index)}>Remove</button>
+        </div>
+      ))}
+      
+      {selectedFiles.length > 0 && (
+        <>
+          <button onClick={handleClearAll}>Clear All</button>
+          <button 
+            onClick={() => handleUpload(selectedFiles as any)}
+            disabled={isUploading}
+          >
+            Upload
+          </button>
+        </>
+      )}
+      
+      {isUploading && <progress value={progress} max={100} />}
+      {showSuccess && <p>Downloaded: {downloadedFileName}</p>}
+    </div>
+  );
+}
+```
+
+### Progress Simulation
+
+The hook simulates upload progress using an interval that increments progress randomly:
+
+```typescript
+const progressInterval = setInterval(() => {
+  setProgress(prev => {
+    const newProgress = prev + Math.random() * 15;
+    return newProgress >= 90 ? 90 : newProgress;
+  });
+}, 200);
+```
+
+- Updates every 200ms
+- Increments by a random amount (up to 15%)
+- Caps at 90% until upload completes
+- Sets to 100% when upload finishes
+
+### File Download Logic
+
+When the upload completes, the hook automatically triggers a download:
+
+1. **Filename determination**: Single file gets `.md` extension, multiple files get `.zip`
+2. **Blob URL creation**: Creates a temporary URL for the blob
+3. **Programmatic click**: Creates and clicks a temporary anchor element
+4. **Cleanup**: Revokes the blob URL and removes the anchor
+
+---
+
+## useConversionMode
+
+The `useConversionMode` hook manages the conversion mode toggle between markdown and Word formats.
+
+### Location
+
+`src/hooks/useConversionMode.ts`
+
+### Full Implementation
+
+```typescript
+import { useState } from 'react';
+
+export type ConversionMode = 'to-markdown' | 'to-word';
+
+export const useConversionMode = () => {
+  const [mode, setMode] = useState<ConversionMode>('to-markdown');
+
+  const toggleMode = () => {
+    setMode(prev => prev === 'to-markdown' ? 'to-word' : 'to-markdown');
+  };
+
+  return { mode, toggleMode };
+};
+```
+
+### TypeScript Types
+
+```typescript
+type ConversionMode = 'to-markdown' | 'to-word';
+```
+
+The hook uses a union type to restrict mode values to two valid options.
+
+### Return Values
+
+**`mode: ConversionMode`**
+
+The current conversion mode.
+
+**`toggleMode(): void`**
+
+Toggles between 'to-markdown' and 'to-word' modes.
+
+### Usage Example
+
+```typescript
+import { useConversionMode } from './hooks/useConversionMode';
+
+function ModeToggle() {
+  const { mode, toggleMode } = useConversionMode();
+
+  return (
+    <div>
+      <p>Current mode: {mode}</p>
+      <button onClick={toggleMode}>
+        Switch to {mode === 'to-markdown' ? 'Word' : 'Markdown'}
+      </button>
+    </div>
+  );
+}
+```
+
+### State Flow
+
+```mermaid
+graph LR
+    A[to-markdown] -->|toggleMode| B[to-word]
+    B -->|toggleMode| A
+```
+
+The hook maintains a simple toggle state that switches between two modes.
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Hook Composition">
+    Both hooks can be used together in a component:
+    
+    ```typescript
+    function App() {
+      const fileUpload = useFileUpload();
+      const { mode, toggleMode } = useConversionMode();
+      
+      // Use both hooks
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Error Handling">
+    The `useFileUpload` hook uses try-catch blocks and displays errors via alerts. Consider replacing with a toast notification system like SweetAlert2 (already in dependencies).
+  </Accordion>
+  
+  <Accordion title="TypeScript Safety">
+    Both hooks are fully typed with TypeScript. Use the exported types:
+    
+    ```typescript
+    import type { ConversionMode } from './hooks/useConversionMode';
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- [API Integration](/development/api-integration) - Backend communication details
+- [Development Setup](/development/setup) - Environment configuration

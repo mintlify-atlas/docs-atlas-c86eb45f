@@ -1,97 +1,179 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "MkDowner Documentation"
+description: "Transform your documents into Markdown format with ease"
+mode: "custom"
 ---
 
-## Setting up
+<div className="relative bg-gradient-to-br from-[#6366f1] via-[#4f46e5] to-[#4338ca] dark:from-[#4f46e5] dark:via-[#4338ca] dark:to-[#3730a3] py-20 overflow-hidden">
+  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utb3BhY2l0eT0iLjEiLz48L2c+PC9zdmc+')] opacity-20"></div>
+  
+  <div className="max-w-6xl mx-auto px-6 relative z-10">
+    <div className="text-center">
+      <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6">
+        Transform Documents into<br />
+        <span className="bg-gradient-to-r from-white to-indigo-100 bg-clip-text text-transparent">Markdown</span>
+      </h1>
+      
+      <p className="text-xl sm:text-2xl text-indigo-100 max-w-3xl mx-auto mb-10">
+        A modern React application for converting PDF, DOCX, PPTX, and image files to Markdown format with an intuitive drag-and-drop interface.
+      </p>
+      
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a 
+          href="/quickstart" 
+          className="inline-flex items-center px-8 py-3.5 bg-white text-[#6366f1] rounded-lg font-semibold hover:bg-indigo-50 transition-colors shadow-lg"
+        >
+          Get Started
+          <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </a>
+        <a 
+          href="/features/file-upload" 
+          className="inline-flex items-center px-8 py-3.5 border-2 border-white/30 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-colors backdrop-blur-sm"
+        >
+          Explore Features
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+    Quick Start
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8 text-center">
+    Get up and running with MkDowner in minutes
+  </p>
+  
+  <Steps>
+    <Step title="Clone the repository">
+      Clone the MkDowner repository and navigate to the project directory.
+      
+      ```bash
+      git clone https://github.com/UlisesGarcia20/app-markdown.git
+      cd app-markdown
+      ```
+    </Step>
+    
+    <Step title="Install dependencies">
+      Install all required npm packages for the React application.
+      
+      ```bash
+      npm install
+      ```
+    </Step>
+    
+    <Step title="Configure the backend URL">
+      Create a `.env` file and set the backend API endpoint.
+      
+      ```bash
+      VITE_API_BASE_URL=http://localhost:5001
+      ```
+      
+      <Note>
+        Make sure your Python backend is running on the configured port before converting files.
+      </Note>
+    </Step>
+    
+    <Step title="Start the development server">
+      Launch the application and start converting documents.
+      
+      ```bash
+      npm run dev
+      ```
+      
+      The application will be available at `http://localhost:5173`. Drag and drop your files to convert them to Markdown!
+    </Step>
+  </Steps>
+</div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+    Key Features
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8 text-center">
+    Everything you need for seamless document conversion
+  </p>
+  
+  <CardGroup cols={2}>
+    <Card title="Drag & Drop Upload" icon="upload" href="/features/file-upload">
+      Intuitive file upload with drag-and-drop support for single or multiple files at once.
+    </Card>
+    <Card title="Multiple Formats" icon="file" href="/features/supported-formats">
+      Support for PDF, DOCX, PPTX, images, and more document formats.
+    </Card>
+    <Card title="Real-time Progress" icon="chart-line" href="/features/conversion">
+      Track conversion progress with a visual progress bar and instant feedback.
+    </Card>
+    <Card title="Automatic Download" icon="download" href="/features/conversion">
+      Converted files are automatically downloaded as Markdown or ZIP archives.
+    </Card>
+  </CardGroup>
+</div>
 
-## Make it yours
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+    Explore Components
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8 text-center">
+    Learn about the React components that power MkDowner
+  </p>
+  
+  <CardGroup cols={2}>
+    <Card title="UploadArea" icon="cloud-arrow-up" href="/components/upload-area">
+      The main upload interface with drag-and-drop and file selection functionality.
+    </Card>
+    <Card title="FileList" icon="list" href="/components/file-list">
+      Display and manage selected files before conversion.
+    </Card>
+    <Card title="Header" icon="heading" href="/components/header">
+      Application header with branding and navigation elements.
+    </Card>
+    <Card title="SupportedFormats" icon="file-circle-check" href="/components/supported-formats">
+      Information display for supported file formats and file size limits.
+    </Card>
+  </CardGroup>
+</div>
 
-Design a docs site that looks great and empowers your users.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+    Developer Resources
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8 text-center">
+    Deep dive into development and customization
+  </p>
+  
+  <CardGroup cols={3}>
+    <Card title="Setup Guide" icon="wrench" href="/development/setup">
+      Complete setup instructions for local development.
+    </Card>
+    <Card title="Custom Hooks" icon="hook" href="/development/hooks">
+      Learn about useFileUpload and other React hooks.
+    </Card>
+    <Card title="API Integration" icon="plug" href="/development/api-integration">
+      Connect to the backend API for file conversion.
+    </Card>
+  </CardGroup>
+</div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-20 mb-16 max-w-5xl mx-auto px-6">
+  <div className="bg-gradient-to-r from-[#6366f1] to-[#4f46e5] dark:from-[#4f46e5] dark:to-[#4338ca] rounded-2xl p-8 sm:p-12 text-center border border-[#818cf8]/20">
+    <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+      Ready to Start Converting?
+    </h2>
+    <p className="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
+      Get started with MkDowner today and streamline your document-to-Markdown workflow.
+    </p>
+    <a 
+      href="/quickstart" 
+      className="inline-flex items-center px-8 py-3.5 bg-white text-[#6366f1] rounded-lg font-semibold hover:bg-indigo-50 transition-colors shadow-lg"
+    >
+      View Quickstart Guide
+      <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+      </svg>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,179 @@
+---
+title: "FileList"
+description: "Display and manage selected files before conversion"
+---
+
+## Overview
+
+The `FileList` component displays all selected files in a formatted list with file metadata, icons, and removal options. It provides users with a clear overview of files queued for conversion and allows individual file removal or clearing all files at once.
+
+### Key Features
+
+- File type-specific icons
+- File size formatting (B, KB, MB, GB)
+- Individual file removal
+- Clear all files option
+- Automatic hiding when no files selected
+
+## Props
+
+<ParamField path="files" type="File[]" required>
+  Array of File objects to display in the list.
+</ParamField>
+
+<ParamField path="onRemoveFile" type="(index: number) => void" required>
+  Callback function triggered when a user clicks the remove button on a file. Receives the file index as a parameter.
+</ParamField>
+
+<ParamField path="onClearAll" type="() => void" required>
+  Callback function triggered when the user clicks the "Clear all" button to remove all files.
+</ParamField>
+
+## Usage Example
+
+```tsx
+import { FileList } from './components/FileList/FileList';
+import { useFileUpload } from './hooks/useFileUpload';
+
+function App() {
+  const { selectedFiles, removeFile, clearAllFiles } = useFileUpload();
+
+  return (
+    <FileList
+      files={selectedFiles}
+      onRemoveFile={removeFile}
+      onClearAll={clearAllFiles}
+    />
+  );
+}
+```
+
+## File Type Icons
+
+The component automatically displays appropriate icons based on file extensions:
+
+| File Type | Extension(s) | Icon |
+|-----------|--------------|------|
+| PDF | `.pdf` | 📄 |
+| Word | `.docx`, `.doc` | 📝 |
+| PowerPoint | `.pptx`, `.ppt` | 📊 |
+| Excel | `.xlsx`, `.xls` | 📈 |
+| Image | `.png`, `.jpg`, `.jpeg`, `.gif` | 🖼️ |
+| Text | `.txt` | 📃 |
+| HTML | `.html` | 🌐 |
+| JSON | `.json` | 📋 |
+| Other | Any other | 📁 |
+
+## Component Behavior
+
+### Empty State
+
+When `files` array is empty, the component returns `null` and renders nothing. This automatically hides the file list when no files are selected.
+
+```tsx
+if (files.length === 0) return null;
+```
+
+### File Display
+
+Each file item shows:
+- **Icon**: Type-specific emoji based on file extension
+- **File name**: Full filename as provided
+- **File size**: Formatted size with appropriate unit (B, KB, MB, GB)
+- **Status**: "Ready" indicator
+- **Remove button**: ✕ icon to remove individual file
+
+### Header Actions
+
+The file list header includes:
+- **Title**: "Selected files"
+- **Clear all button**: Removes all files at once
+
+## Integration with Hooks
+
+The `FileList` component works with the `useFileUpload` hook:
+
+```tsx
+const { selectedFiles, removeFile, clearAllFiles } = useFileUpload();
+
+<FileList
+  files={selectedFiles}
+  onRemoveFile={removeFile}
+  onClearAll={clearAllFiles}
+/>
+```
+
+See [useFileUpload](/development/hooks#usefileupload) for complete hook documentation.
+
+## Styling & Customization
+
+The component uses CSS classes from `FileList.css`:
+
+- `.filelist-card` - Main container
+- `.file-list-header` - Header with title and clear button
+- `.selected-files` - Container for file items
+- `.file-item` - Individual file row
+- `.file-icon` - File type icon
+- `.file-details` - File name and size container
+- `.remove-file-btn` - Individual remove button
+- `.clear-all-btn` - Clear all button
+
+## Helper Functions
+
+### getFileIcon
+
+Determines the appropriate emoji icon based on file extension:
+
+```tsx
+const getFileIcon = (fileName: string) => {
+  const ext = fileName.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'pdf': return '📄';
+    case 'docx': case 'doc': return '📝';
+    // ... more cases
+    default: return '📁';
+  }
+};
+```
+
+### formatFileSize
+
+Converts bytes to human-readable format:
+
+```tsx
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+};
+```
+
+Example outputs:
+- `1024` bytes → `"1 KB"`
+- `1536000` bytes → `"1.5 MB"`
+- `500` bytes → `"500 B"`
+
+## Implementation Details
+
+### Source Code Location
+
+`~/workspace/source/src/components/FileList/FileList.tsx:48-84`
+
+### TypeScript Interface
+
+```tsx
+interface FileListProps {
+  files: File[];
+  onRemoveFile: (index: number) => void;
+  onClearAll: () => void;
+}
+```
+
+### Key Implementation Notes
+
+- Component returns `null` when file array is empty (conditional rendering)
+- Uses array index as key for file items (suitable since order is stable)
+- File size calculated from `file.size` property (bytes)
+- File extension extracted using string split on filename
